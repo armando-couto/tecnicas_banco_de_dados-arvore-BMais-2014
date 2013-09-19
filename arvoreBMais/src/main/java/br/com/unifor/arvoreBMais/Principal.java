@@ -18,55 +18,49 @@ public class Principal {
 	public static void main(String[] args) {
 
 		JFileChooser chooser = new JFileChooser();
-		// Diretório raiz.
 		chooser.setCurrentDirectory(new File("C:" + File.separator));
-		// restringe a amostra a diretorios apenas.
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		
 		if (chooser.showOpenDialog(null) == 0) {
+			int tamanho = 4; // Tamanho máximo dos nós da árvore.
+			int numeroOrdenador = 3; // O número que deve ser ordenado.
+			Registro registro = new Registro();
 			
+			String arquivo = leituraArquivo(chooser.getSelectedFile());
+			
+			String[] numerosDaArvore = arquivo.split(" ");
+			
+			Registro[] registros = new Registro[numerosDaArvore.length];
+			
+			Arvore arvore = new Arvore(tamanho, registros.length);
+			for (int i = 0; i < numerosDaArvore.length; i++) {
+				registros[i] = new Registro(Integer.parseInt(numerosDaArvore[i]));
+				if (numeroOrdenador == registros[i].getNumero())
+					registro = registros[i];
+				arvore.inserir(registros[i]);
+			}
+			System.out.println(arvore.toString());
+			System.out.println(arvore.getMenorEspaco());
+			System.out.println(arvore.order(registro));
 		}
-
-		int t = 4; // Tamanho
-		int oNum = 3;
-		Registro oRegistro = new Registro();
-
-		String inputFile = readFromFile(chooser.getSelectedFile());
-
-		String[] numbers = inputFile.split(" ");
-
-		Registro[] Registros = new Registro[numbers.length];
-
-		Arvore arvore = new Arvore(t, Registros.length);
-		for (int i = 0; i < numbers.length; i++) {
-			Registros[i] = new Registro(Integer.parseInt(numbers[i]));
-			if (oNum == Registros[i].getNumero())
-				oRegistro = Registros[i];
-			arvore.inserir(Registros[i]);
-		}
-		System.out.println(arvore.toString());
-		System.out.println(arvore.getMenorEspaco());
-		System.out.println(arvore.order(oRegistro));
 	}
 
-	public static String readFromFile(File tFile) {
-		String tContent = "";
+	public static String leituraArquivo(File file) {
+		String resultado = "";
 		try {
-
-			FileInputStream fstream = new FileInputStream(tFile);
-			DataInputStream in = new DataInputStream(fstream);
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			String strLine;
-
-			while ((strLine = br.readLine()) != null) {
-				tContent = tContent + strLine + " ";
+			FileInputStream fis = new FileInputStream(file);
+			DataInputStream dis = new DataInputStream(fis);
+			BufferedReader br = new BufferedReader(new InputStreamReader(dis));
+			
+			String linha;
+			while ((linha = br.readLine()) != null) {
+				resultado = resultado + linha + " ";
 			}
 
-			in.close();
+			dis.close();
 		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 		}
-		return tContent;
+		return resultado;
 	}
 }
