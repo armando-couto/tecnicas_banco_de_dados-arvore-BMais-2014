@@ -13,6 +13,10 @@ public class Registro {
 		numero = 0;
 	}
 	
+	public Registro(int numero) {
+		this.numero = numero;
+	}
+	
 	public int getNumero() {
 		return numero;
 	}
