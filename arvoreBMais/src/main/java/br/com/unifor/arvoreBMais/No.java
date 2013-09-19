@@ -241,12 +241,13 @@ public class No {
 		}
 	}
 
-	public String toString() { // imprime os registros internos
+	// imprime os registros internos
+	public String toString() {
 		String ans = "";
 
 		for (int i = 0; i < listaInterna.size(); i++) {
 			if (get(i) != null)
-				ans = ans + "," + get(i).getNumero();
+				ans = ans + "-" + get(i).getNumero();
 		}
 		ans = ans.substring(1);
 

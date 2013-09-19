@@ -16,27 +16,31 @@ import javax.swing.JOptionPane;
  */
 public class Principal {
 
+	/**
+	 * Exemplo escolha um arquivo no resources e depois diz a ordem da árvore.
+	 * 
+	 * @param args
+	 */
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new File("C:" + File.separator));
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		
+
 		if (chooser.showOpenDialog(null) == 0) {
-			// Tamanho máximo dos nós da árvore.
-			int tamanho = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o tamanho da Árvore?"));
 			// O número que deve ser ordenado.
 			int numeroOrdenador = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o número ordenador?"));
 			Registro registro = new Registro();
-			
+
 			String arquivo = leituraArquivo(chooser.getSelectedFile());
-			
+
 			// array de strings que possuem os números
 			String[] numerosDaArvore = arquivo.split(" ");
-			
+
 			Registro[] registros = new Registro[numerosDaArvore.length];
-			
-			Arvore arvore = new Arvore(tamanho, registros.length);
+
+			Arvore arvore = new Arvore(numerosDaArvore.length, registros.length);
 			// inicializa os registro e insere na árvore
 			for (int i = 0; i < numerosDaArvore.length; i++) {
 				registros[i] = new Registro(Integer.parseInt(numerosDaArvore[i]));
@@ -46,9 +50,7 @@ public class Principal {
 				}
 				arvore.inserir(registros[i]);
 			}
-			System.out.println(arvore.toString());
-			System.out.println(arvore.getMenorEspaco());
-			System.out.println(arvore.order(registro));
+			System.out.println("Resultado: " + arvore.toString());
 		}
 	}
 
@@ -58,7 +60,7 @@ public class Principal {
 			FileInputStream fis = new FileInputStream(file);
 			DataInputStream dis = new DataInputStream(fis);
 			BufferedReader br = new BufferedReader(new InputStreamReader(dis));
-			
+
 			String linha;
 			// lendo arquivo linha a linha
 			while ((linha = br.readLine()) != null) {
