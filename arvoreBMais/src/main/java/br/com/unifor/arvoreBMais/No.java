@@ -212,7 +212,7 @@ public class No {
 
 		for (int i = 0; i < listaInterna.size(); i++) {
 			if (get(i) != null)
-				ans = ans + "," + get(i).toString();
+				ans = ans + "," + get(i).getNumero();
 		}
 		ans = ans.substring(1);
 
