@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  * @author armandocouto
@@ -22,21 +23,27 @@ public class Principal {
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		
 		if (chooser.showOpenDialog(null) == 0) {
-			int tamanho = 4; // Tamanho máximo dos nós da árvore.
-			int numeroOrdenador = 3; // O número que deve ser ordenado.
+			// Tamanho máximo dos nós da árvore.
+			int tamanho = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o tamanho da Árvore?"));
+			// O número que deve ser ordenado.
+			int numeroOrdenador = Integer.parseInt(JOptionPane.showInputDialog(null, "Digite o número ordenador?"));
 			Registro registro = new Registro();
 			
 			String arquivo = leituraArquivo(chooser.getSelectedFile());
 			
+			// array de strings que possuem os números
 			String[] numerosDaArvore = arquivo.split(" ");
 			
 			Registro[] registros = new Registro[numerosDaArvore.length];
 			
 			Arvore arvore = new Arvore(tamanho, registros.length);
+			// inicializa os registro e insere na árvore
 			for (int i = 0; i < numerosDaArvore.length; i++) {
 				registros[i] = new Registro(Integer.parseInt(numerosDaArvore[i]));
-				if (numeroOrdenador == registros[i].getNumero())
+				if (numeroOrdenador == registros[i].getNumero()) {
+					// o registro é encontrado e salvo
 					registro = registros[i];
+				}
 				arvore.inserir(registros[i]);
 			}
 			System.out.println(arvore.toString());
@@ -53,6 +60,7 @@ public class Principal {
 			BufferedReader br = new BufferedReader(new InputStreamReader(dis));
 			
 			String linha;
+			// lendo arquivo linha a linha
 			while ((linha = br.readLine()) != null) {
 				resultado = resultado + linha + " ";
 			}

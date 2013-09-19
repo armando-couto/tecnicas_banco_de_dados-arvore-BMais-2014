@@ -9,16 +9,17 @@ import java.util.Vector;
  */
 public class No {
 
-	private boolean folha;
-	private Vector<Registro> listaInterna;
-	private No proximo;
-	private No anterior;
-	private No pai;
-	private int tamanho;
-	private int tamanhoContador;
+	private boolean folha; // diz se o nó é folha ou não
+	private Vector<Registro> listaInterna; // registros internos do nó
+	private No proximo; // próxima folha
+	private No anterior; // folha anterior
+	private No pai; // pai do nó
+	private int tamanho; // tamanho do nó
+	private int tamanhoContador; // menor espaço do nó
 	private int menorEspaco = Integer.MAX_VALUE;
-	private int peso;
+	private int peso; // quantos registros pertencem ao nó
 
+	// inicializa o nó com o tamanho máximo de t
 	public No(int tamanho) {
 		this.folha = true;
 		this.listaInterna = new Vector<Registro>();
@@ -30,13 +31,18 @@ public class No {
 		this.peso = 0;
 	}
 
-	public No(boolean folha, int tamanho) {
+	public No(boolean folha, int tamanho) { // inicializa o nó considerando se é
+											// uma folha ou não
 		this.folha = folha;
 		if (this.folha) {
-			this.listaInterna = new Vector<Registro>();
+			this.listaInterna = new Vector<Registro>(); // quando o nó é uma
+														// folha, o vetor possui
+														// registros
 			proximo = null;
 		} else {
-			this.listaInterna = new Vector<Registro>();
+			this.listaInterna = new Vector<Registro>(); // quando o nó não é uma
+														// folha, o vetor possui
+														// chaves
 		}
 		this.tamanho = tamanho;
 		this.tamanhoContador = 0;
@@ -86,28 +92,30 @@ public class No {
 	 * @param x
 	 */
 	public void inserir(Registro x) {
-		if (isEmpty()) {
+		if (isEmpty()) { // o nó está vazio, apenas é inserido
 			listaInterna.insertElementAt(x, 0);
-			tamanhoContador++;
+			tamanhoContador++; // ajusta o tamanho
 		} else {
 			boolean inserted = false;
 			int i = -1;
-			while (!inserted) {
+			while (!inserted) { // Continuar até que o registro seja inserido
 				i++;
-				if (i >= tamanhoContador) {
+				if (i >= tamanhoContador) { // fim do vetor
 					listaInterna.insertElementAt(x, i);
-					tamanhoContador++;
-					inserted = true;
-				} else if ((get(i) != null) && (x.getNumero() < get(i).getNumero())) {
+					tamanhoContador++; // ajusta o tamanho
+					inserted = true; // inseriu
+				} else if ((get(i) != null) && (x.getNumero() < get(i).getNumero())) { // lugar
+																						// certo
 					listaInterna.insertElementAt(x, i);
 					if (!isFolha()) {
 						((Chave) get(i + 1)).setEsquerda(((Chave) get(i)).getDireita());
 					}
-					inserted = true;
-					tamanhoContador++;
+					inserted = true; // inseriu
+					tamanhoContador++; // ajusta o tamanho
 				}
 			}
 
+			// ajustar a distância mínima, se necessário
 			if (folha) {
 				int esquerdaMin = Integer.MAX_VALUE;
 				int direitaMin = Integer.MAX_VALUE;
@@ -129,6 +137,7 @@ public class No {
 				menorEspaco = Math.min(menorEspaco, Math.min(esquerdaMin, direitaMin));
 			}
 		}
+		// Ajuste de peso
 		if (folha) {
 			this.pesoIncrementa();
 			No curr = (No) pai;
@@ -138,7 +147,7 @@ public class No {
 			}
 		}
 		if (isFull())
-			Split();
+			Split(); // O nó é agora completo, a divisão tem que acontecer
 	}
 
 	/**
@@ -146,68 +155,93 @@ public class No {
 	 * @param i
 	 * @return Registro
 	 */
-	public Registro remove(int i) {
-		tamanhoContador--;
+	public Registro remove(int i) { // remove um registro específico
+		tamanhoContador--; // ajusta o tamanho
 		return listaInterna.remove(i);
 	}
 
-	private void Split() {
-		No b = new No(folha, tamanho);
+	private void Split() { // só acontece em uma folha cheia!
+		No b = new No(folha, tamanho); // irmão
 		int i;
 
-		if (tamanhoLista() % 2 == 0)
+		if (tamanhoLista() % 2 == 0) // o tamanho é um número duplo, os cortar
+										// ao meio
 			i = tamanhoLista() / 2;
 		else
+			// o tamanho é um número ímpar, a maioria dos registros permanecem
+			// no nó antigo
 			i = tamanhoLista() / 2 + 1;
 
 		while (i != tamanhoLista()) {
 			if (!folha)
-				setPeso(peso - ((Chave) get(i)).getDireita().getPeso());
+				setPeso(peso - ((Chave) get(i)).getDireita().getPeso()); // ajusta
+																			// o
+																			// peso
+																			// de
+																			// uma
+																			// chave
 			else
-				this.pesoDecrementa();
-			b.inserir(this.remove(i));
+				this.pesoDecrementa(); // ajusta o peso de um registro
+			b.inserir(this.remove(i)); // remove do antigo nó e insere no novo
+										// nó
 		}
-
-		Chave k = new Chave(listaInterna.lastElement().getNumero());
-		k.setEsquerda(this);
-		k.setDireita(b);
-		int w = 0;
+		// Após este loop, 'a' é cortado a metade e 'b' tem a outra metade
+		Chave k = new Chave(listaInterna.lastElement().getNumero()); // cria
+																		// nova
+																		// chave
+																		// depois
+																		// de
+																		// seu
+																		// sucessor;
+		k.setEsquerda(this); // seta o filho esquerdo da chave
+		k.setDireita(b); // seta o filho direito da chave
+		int w = 0; // ajustando o peso de b
 		i = 0;
 
+		// cuidando de b
 		if (!b.isFolha()) {
 			while (i != b.tamanhoLista()) {
-				((Chave) b.get(i)).getEsquerda().setPai(b);
-				w += ((Chave) b.get(i)).getEsquerda().getPeso();
+				((Chave) b.get(i)).getEsquerda().setPai(b); // Atribui um novo
+															// pai para o filho
+															// esquerdo
+				w += ((Chave) b.get(i)).getEsquerda().getPeso(); // Conta o peso
 				i++;
 			}
-			((Chave) b.ultimo()).getDireita().setPai(b);
-			w += ((Chave) b.ultimo()).getDireita().getPeso();
-			b.setPeso(w);
+			((Chave) b.ultimo()).getDireita().setPai(b); // Atribui um novo pai
+															// para o filho
+															// direito
+			w += ((Chave) b.ultimo()).getDireita().getPeso(); // conta o peso
+			b.setPeso(w); // seta o peso de b
 		}
 
-		if (folha) {
+		if (folha) { // Se b é uma folha ajustar suas folhas seguintes e
+						// anteriores
 			b.setProximo(this.getProximo());
 			setProximo(b);
 			b.setAnterior(this);
-		} else {
-			setPeso(peso - ((Chave)ultimo()).getDireita().getPeso());
-			listaInterna.remove(listaInterna.lastElement());
-			tamanhoContador--;
+		} else { // o nó é interno, é preciso remover a chave
+			setPeso(peso - ((Chave) ultimo()).getDireita().getPeso()); // ajusta
+																		// o
+																		// peso
+			listaInterna.remove(listaInterna.lastElement()); // remove a última
+																// chave
+			tamanhoContador--; // ajusta o tamanho
 		}
 
-		if (pai == null) { 
-			No f = new No(false, tamanho);
-			f.inserir(k);
-			setPai(f); 
-			b.setPai(f);
+		if (pai == null) { // não há pai para este nó, provavelmente é a raiz
+			No f = new No(false, tamanho); // cria um novo nó para ser o pai
+			f.inserir(k); // insere a chave para o novo pai, faz divisão, se
+							// necessário
+			setPai(f); // seta o pai do nó
+			b.setPai(f); // mesmo pai para o irmão
 			pai.setPeso(this.peso + b.peso);
-		} else {
+		} else { // já é um pai
 			b.setPai(pai);
-			pai.inserir(k);
+			pai.inserir(k); // recursivo se pai está cheio
 		}
 	}
 
-	public String toString() {
+	public String toString() { // imprime os registros internos
 		String ans = "";
 
 		for (int i = 0; i < listaInterna.size(); i++) {

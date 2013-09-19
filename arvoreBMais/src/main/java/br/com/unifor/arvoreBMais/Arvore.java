@@ -7,10 +7,10 @@ package br.com.unifor.arvoreBMais;
  */
 public class Arvore {
 
-	private No raiz;
-	private No primeiro;
-	private int menorEspaco;
-	private Ramo ramo;
+	private No raiz; // raiz da árvore
+	private No primeiro; // primeira folha
+	private int menorEspaco; // menor espaço na árvore
+	private Ramo ramo; // ramo da árvore
 
 	public Arvore() {
 		init(0);
@@ -18,6 +18,7 @@ public class Arvore {
 
 	public Arvore(int t, int ramoTamanho) {
 		init(t);
+		// inicializando o ramo
 		this.ramo = new Ramo(ramoTamanho);
 	}
 
@@ -36,44 +37,57 @@ public class Arvore {
 	}
 
 	public void inserir(Registro x) {
+		// add o registro o registro p/ o ramo também
 		this.adicionarNovoRamo(x);
 		No curr = raiz;
 		int i = -1;
+		// percorre a árvore até chegar a uma folha
 		while (!curr.isFolha()) {
 			i++;
+			// fim da folha
 			if (i >= curr.getTamanho()) {
 				curr = ((Chave) curr.ultimo()).getDireita();
 				i = -1;
-			} else if (x.getNumero() <= curr.get(i).getNumero()) {
+			} else if (x.getNumero() <= curr.get(i).getNumero()) { 
+				// encontramos a chave a direita
 				curr = ((Chave) curr.get(i)).getEsquerda();
 				i = -1;
 			}
 		}
+		// insere x na folha, se divide, se necessário
 		curr.inserir(x);
 
+		// ajusta MenorEspaco, se preciso
 		if (curr.getMenorEspaco() < menorEspaco)
 			setMenorEspaco(curr.getMenorEspaco());
 
+		// ajusta o nó, se preciso
 		if (raiz.getPai() != null)
 			raiz = raiz.getPai();
 	}
 
 	public boolean pesquisar(Registro x) {
+		// checa o ramo para este registro
 		if (!contains(x)) {
 			return false;
 		} else {
+			// assegurando que a árvore não contem x
 			No curr = raiz;
 			int i = -1;
+			// percorrendo a árvore até chegar a folha
 			while (!curr.isFolha()) {
 				i++;
+				// fim do nó
 				if (i >= curr.getTamanho()) {
 					curr = ((Chave) curr.ultimo()).getDireita();
 					i = -1;
 				} else if (x.getNumero() <= curr.get(i).getNumero()) {
+					// encontramos a chave à direita
 					curr = ((Chave) curr.get(i)).getEsquerda();
 					i = -1;
 				}
 			}
+			// retorna true, se o nó contém x
 			return curr.pesquisar(x);
 		}
 	}
@@ -83,13 +97,16 @@ public class Arvore {
 		int i = 0;
 		No curr = raiz;
 
+		// percorre a árvore até chegar a uma das folhas
 		while (!curr.isFolha()) {
 			if ((i != curr.getTamanho()) && (x.getNumero() > curr.get(i).getNumero())) {
 				counter += ((Chave) curr.get(i)).getEsquerda().getPeso();
-			} else if (i == curr.getTamanho()) {
+			} else if (i == curr.getTamanho()) { // fim do nó
+				// addiciona todo o peso do filho esquerdo
 				curr = ((Chave) curr.ultimo()).getDireita();
 				i = -1;
 			} else {
+				// chave à direita é encontrada
 				curr = ((Chave) curr.get(i)).getEsquerda();
 				i = -1;
 			}
@@ -98,6 +115,7 @@ public class Arvore {
 
 		i = 0;
 		while ((i != curr.getTamanho()) && (x.getNumero() >= curr.get(i).getNumero())) {
+			// estamos dentro da folha direita, contar os registros até chegar x
 			counter++;
 			i++;
 		}
